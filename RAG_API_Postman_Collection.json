@@ -1,0 +1,309 @@
+{
+  "info": {
+    "name": "RAG Question Answering API - Local",
+    "description": "Complete API collection for the RAG (Retrieval Augmented Generation) Question Answering system. This collection includes endpoints for health checks, configuration, searching chunks, and asking questions with AI-generated answers.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "item": [
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["health"]
+            },
+            "description": "Check if the API is running and healthy. Returns basic service information."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Configuration",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/api/config",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "config"]
+            },
+            "description": "Get current RAG system configuration including models, top_k, temperature, and other settings."
+          },
+          "response": []
+        },
+        {
+          "name": "Root Endpoint",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": [""]
+            },
+            "description": "Root endpoint that provides links to API documentation."
+          },
+          "response": []
+        }
+      ],
+      "description": "System endpoints for health checks and configuration"
+    },
+    {
+      "name": "Search",
+      "item": [
+        {
+          "name": "Search Chunks - Basic",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"What is Solara?\",\n  \"top_k\": 5\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/search",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "search"]
+            },
+            "description": "Search for relevant document chunks without generating an AI answer. Returns raw chunks with content and metadata."
+          },
+          "response": []
+        },
+        {
+          "name": "Search Chunks - With Filters",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"Solara transformation\",\n  \"top_k\": 10,\n  \"filters\": \"space_key eq 'ENGINEERING'\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/search",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "search"]
+            },
+            "description": "Search with Azure Search OData filters to limit results to specific spaces or criteria."
+          },
+          "response": []
+        },
+        {
+          "name": "Search Chunks - Find Person",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"Tell me about Ravi Kumar\",\n  \"top_k\": 5\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/search",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "search"]
+            },
+            "description": "Search for information about a specific person."
+          },
+          "response": []
+        }
+      ],
+      "description": "Search endpoints for finding relevant chunks without AI generation"
+    },
+    {
+      "name": "Question Answering",
+      "item": [
+        {
+          "name": "Ask Question - Simple",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"What is Solara?\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/ask",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "ask"]
+            },
+            "description": "Ask a question and get an AI-generated answer with source citations. Uses default settings."
+          },
+          "response": []
+        },
+        {
+          "name": "Ask Question - About Person",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"Tell me more about Ravi Kumar\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/ask",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "ask"]
+            },
+            "description": "Ask about a specific person in your knowledge base."
+          },
+          "response": []
+        },
+        {
+          "name": "Ask Question - Advanced Settings",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"What is Solara?\",\n  \"system_prompt\": \"You are a helpful assistant. Provide concise, factual answers based on the given context.\",\n  \"use_hybrid_search\": true,\n  \"top_k\": 10,\n  \"temperature\": 0.5,\n  \"max_tokens\": 500\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/ask",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "ask"]
+            },
+            "description": "Ask a question with custom system prompt, search parameters, and generation settings."
+          },
+          "response": []
+        },
+        {
+          "name": "Ask Question - With Filters",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"Tell me about the transformation story\",\n  \"filters\": \"space_key eq 'ENGINEERING'\",\n  \"top_k\": 5\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/ask",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "ask"]
+            },
+            "description": "Ask a question limited to specific spaces using OData filters."
+          },
+          "response": []
+        },
+        {
+          "name": "Ask Question - Creative Response",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"What is Solara?\",\n  \"temperature\": 0.9,\n  \"max_tokens\": 1000,\n  \"system_prompt\": \"You are a creative storyteller. Make the answer engaging and interesting while staying factual.\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/ask",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "ask"]
+            },
+            "description": "Ask a question with higher temperature for more creative responses."
+          },
+          "response": []
+        },
+        {
+          "name": "Ask Question - Concise Response",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"question\": \"What is Solara?\",\n  \"temperature\": 0.3,\n  \"max_tokens\": 200,\n  \"system_prompt\": \"Provide a brief, concise answer in 2-3 sentences.\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/ask",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["api", "ask"]
+            },
+            "description": "Ask a question with lower temperature for more focused, concise responses."
+          },
+          "response": []
+        }
+      ],
+      "description": "Question answering endpoints using RAG (Retrieval Augmented Generation)"
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000",
+      "type": "string"
+    }
+  ]
+}
+

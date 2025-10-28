@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 import sys
+import os
 
 from config.settings import settings
 from services.embedding_service import EmbeddingService
@@ -15,6 +16,10 @@ from utils.logger import setup_logger, get_logger
 # Set up logging
 setup_logger(__name__, settings.LOG_LEVEL)
 logger = get_logger(__name__)
+
+# Determine if we're in production mode
+# Set ENVIRONMENT=production in Render to disable Swagger
+is_production = os.getenv("ENVIRONMENT", "development").lower() == "production"
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -44,8 +49,10 @@ app = FastAPI(
     Click on any endpoint below, then click **"Try it out"** to test the API!
     """,
     version="1.0.0",
-    docs_url="/docs",  # Swagger UI
-    redoc_url="/redoc",  # Alternative documentation
+    # Disable Swagger UI and ReDoc in production
+    docs_url=None if is_production else "/docs",
+    redoc_url=None if is_production else "/redoc",
+    openapi_url=None if is_production else "/openapi.json",
 )
 
 # Enable CORS
@@ -402,18 +409,33 @@ async def get_config():
     "/",
     tags=["System"],
     summary="Root Endpoint",
-    description="Redirects to API documentation"
+    description="API information and available endpoints"
 )
 async def root():
     """
-    Root endpoint - redirects to Swagger documentation.
+    Root endpoint - provides API information.
     """
-    return {
+    response = {
         "message": "RAG Question Answering API",
-        "docs": "/docs",
-        "redoc": "/redoc",
-        "health": "/health"
+        "version": "1.0.0",
+        "environment": "production" if is_production else "development",
+        "endpoints": {
+            "health": "/health",
+            "config": "/api/config",
+            "search": "/api/search (POST)",
+            "ask": "/api/ask (POST)"
+        }
     }
+    
+    # Only include docs URLs in development mode
+    if not is_production:
+        response["documentation"] = {
+            "swagger": "/docs",
+            "redoc": "/redoc",
+            "openapi": "/openapi.json"
+        }
+    
+    return response
 
 
 if __name__ == "__main__":
@@ -433,8 +455,14 @@ if __name__ == "__main__":
     
     # Run the FastAPI app
     logger.info("Starting FastAPI server...")
-    logger.info(f"Swagger UI available at: http://localhost:{port}/docs")
-    logger.info(f"ReDoc available at: http://localhost:{port}/redoc")
+    logger.info(f"Environment: {'PRODUCTION' if is_production else 'DEVELOPMENT'}")
+    
+    if is_production:
+        logger.info("⚠️  API documentation (Swagger UI) is DISABLED in production mode")
+        logger.info("ℹ️  To enable docs, set ENVIRONMENT=development")
+    else:
+        logger.info(f"📖 Swagger UI available at: http://localhost:{port}/docs")
+        logger.info(f"📖 ReDoc available at: http://localhost:{port}/redoc")
     
     uvicorn.run(
         app,
