@@ -418,6 +418,7 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
+    import os
     
     # Validate configuration
     try:
@@ -427,15 +428,18 @@ if __name__ == "__main__":
         logger.error(f"Configuration error: {str(e)}")
         sys.exit(1)
     
+    # Get port from environment (for cloud platforms like Render)
+    port = int(os.getenv("PORT", 8000))
+    
     # Run the FastAPI app
     logger.info("Starting FastAPI server...")
-    logger.info("Swagger UI available at: http://localhost:8000/docs")
-    logger.info("ReDoc available at: http://localhost:8000/redoc")
+    logger.info(f"Swagger UI available at: http://localhost:{port}/docs")
+    logger.info(f"ReDoc available at: http://localhost:{port}/redoc")
     
     uvicorn.run(
         app,
         host="0.0.0.0",
-        port=8000,
+        port=port,
         log_level="info"
     )
 

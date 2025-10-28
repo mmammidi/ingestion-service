@@ -27,8 +27,8 @@ python-dotenv==1.0.1
 requests==2.31.0
 tenacity==8.2.3
 tiktoken==0.6.0
-pydantic==2.6.1
-pydantic-settings==2.1.0
+pydantic>=2.9.0
+pydantic-settings>=2.5.0
 
 # Scheduling
 schedule==1.2.0

@@ -1,0 +1,45 @@
+services:
+  - type: web
+    name: rag-api
+    runtime: python
+    plan: free
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt
+    startCommand: python api_fastapi.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: CONFLUENCE_URL
+        sync: false
+      - key: CONFLUENCE_USERNAME
+        sync: false
+      - key: CONFLUENCE_API_TOKEN
+        sync: false
+      - key: CONFLUENCE_SPACES
+        sync: false
+      - key: AZURE_OPENAI_ENDPOINT
+        sync: false
+      - key: AZURE_OPENAI_API_KEY
+        sync: false
+      - key: AZURE_OPENAI_EMBEDDING_DEPLOYMENT
+        sync: false
+      - key: AZURE_OPENAI_API_VERSION
+        sync: false
+      - key: AZURE_OPENAI_CHAT_ENDPOINT
+        sync: false
+      - key: AZURE_OPENAI_CHAT_API_KEY
+        sync: false
+      - key: AZURE_OPENAI_CHAT_DEPLOYMENT
+        sync: false
+      - key: AZURE_SEARCH_ENDPOINT
+        sync: false
+      - key: AZURE_SEARCH_API_KEY
+        sync: false
+      - key: AZURE_SEARCH_INDEX_NAME
+        sync: false
+      - key: RAG_TOP_K
+        value: "5"
+      - key: RAG_TEMPERATURE
+        value: "0.7"
+      - key: RAG_MAX_TOKENS
+        value: "1000"
+
