@@ -7,7 +7,10 @@ error: failed to create directory /usr/local/cargo/registry/cache
 Caused by: Read-only file system (os error 30)
 ```
 
-**Root Cause**: `pydantic-core==2.16.2` tried to compile from Rust source code on Render's read-only filesystem.
+**Root Causes**: 
+1. `pydantic-core==2.16.2` tried to compile from Rust source
+2. `tiktoken==0.6.0` tried to compile from Rust source on Python 3.13
+3. Python 3.13 has limited pre-built wheel support (too new)
 
 ---
 
@@ -17,18 +20,20 @@ Caused by: Read-only file system (os error 30)
 ```diff
 - pydantic==2.6.1
 - pydantic-settings==2.1.0
+- tiktoken==0.6.0
 + pydantic>=2.9.0
 + pydantic-settings>=2.5.0
++ tiktoken>=0.7.0
 ```
 
-✅ Newer versions have pre-built wheels (no compilation needed)
+✅ Newer versions have pre-built wheels for Python 3.11 (no compilation needed)
 
 ### **2. Created `runtime.txt`**
 ```
-python-3.12.0
+python-3.11.9
 ```
 
-✅ Forces Render to use stable Python 3.12 (better package support)
+✅ Forces Render to use stable Python 3.11 (best package compatibility, all wheels available)
 
 ### **3. Updated `api_fastapi.py`**
 ```python
@@ -76,7 +81,7 @@ git push origin main
 4. Configure:
    - **Build Command**: `pip install --upgrade pip && pip install -r requirements.txt`
    - **Start Command**: `python api_fastapi.py`
-   - **Python Version**: 3.12 (from runtime.txt)
+   - **Python Version**: 3.11.9 (from runtime.txt)
 5. Add environment variables
 6. Click **"Create Web Service"**
 
@@ -119,9 +124,9 @@ RAG_MAX_TOKENS=1000
 ### **Build Process (~5 minutes)**
 ```
 1. Clone repository ✓
-2. Install Python 3.12 ✓
+2. Install Python 3.11.9 ✓
 3. Upgrade pip ✓
-4. Install requirements ✓ (No compilation!)
+4. Install requirements ✓ (All pre-built wheels, no compilation!)
 5. Start application ✓
 ```
 
@@ -167,8 +172,8 @@ https://your-app.onrender.com/docs
 
 | File | Change | Why |
 |------|--------|-----|
-| `requirements.txt` | Updated pydantic | Fix compilation error |
-| `runtime.txt` | Added (new) | Force Python 3.12 |
+| `requirements.txt` | Updated pydantic, tiktoken | Fix compilation errors |
+| `runtime.txt` | Added (python-3.11.9) | Force stable Python with wheel support |
 | `api_fastapi.py` | Dynamic PORT | Work with Render |
 | `render.yaml` | Added (new) | Easy deployment |
 | `RENDER_DEPLOYMENT_GUIDE.md` | Added (new) | Full instructions |
@@ -192,10 +197,10 @@ https://your-app.onrender.com/docs
 ## 🆘 **If Build Still Fails**
 
 1. **Check Python Version**
-   - Verify `runtime.txt` contains `python-3.12.0`
+   - Verify `runtime.txt` contains `python-3.11.9`
 
 2. **Check Requirements**
-   - Verify `pydantic>=2.9.0` (not pinned to old version)
+   - Verify `pydantic>=2.9.0` and `tiktoken>=0.7.0` (not pinned to old versions)
 
 3. **Check Build Logs**
    - Render Dashboard → Your Service → Logs
